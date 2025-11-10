@@ -1,8 +1,8 @@
-// components/Navbar.tsx (Atau komponen Navbar Anda)
+// components/Navbar.tsx
 "use client"
 import Link from 'next/link';
-import { Button } from '@/components/ui/button'; // Sesuaikan path ini jika perlu
-import { Home, Moon, Sun, LogOut, User } from 'lucide-react'; 
+import { Button } from '@/components/ui/button';
+import { Home, Moon, Sun, LogOut } from 'lucide-react'; 
 import { useEffect, useRef, useState } from 'react';
 import { authClient } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
@@ -10,53 +10,48 @@ import { useRouter } from 'next/navigation';
 const navItems = [
     { name: 'Home', href: '/' },
     { name: 'Peta', href: '/map' },
-    { name: 'Pesiapan', href: '/education' },
+    { name: 'Persiapan', href: '/education' },
     { name: 'Artikel', href: '/artikel' },
     { name: 'Panduan', href: '/panduan' }
 ];
 
 export function Navbar() {
     const navRef = useRef<HTMLElement | null>(null);
-    const [initialized, setInitialized] = useState(false); // State baru untuk Hydration
+    const [initialized, setInitialized] = useState(false);
     const router = useRouter();
     const [isAdmin, setIsAdmin] = useState(false);
     
     // Better Auth session
     const { data: session } = authClient.useSession();
     
-    // 1. Nilai awal harus SAMA di Server dan Klien. Kita tetapkan default 'light'.
-    // Logika pembacaan localStorage dipindahkan ke useEffect.
     const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
-    // 2. Gunakan useEffect untuk mengakses window, localStorage, dan menyelesaikan tema
+    // Initialize theme from localStorage/system preference
     useEffect(() => {
-        // Terapkan logika inisialisasi tema yang benar (hanya berjalan di klien)
         const stored = localStorage.getItem('theme');
         const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         
-        // Tetapkan tema yang benar dari penyimpanan/sistem
         let initialTheme: 'light' | 'dark' = 'light';
         if (stored === 'dark' || (stored === null && systemPrefersDark)) {
             initialTheme = 'dark';
         }
 
         setTheme(initialTheme);
-        setInitialized(true); // Komponen sudah mounted dan state tema sudah benar
+        setInitialized(true);
     }, []);
 
-    // 3. Efek untuk menerapkan kelas 'dark' dan menyimpan preferensi
+    // Apply theme class and save to localStorage
     useEffect(() => {
         const root = document.documentElement;
         if (theme === 'dark') root.classList.add('dark');
         else root.classList.remove('dark');
         
-        // Pastikan kita hanya menulis ke localStorage SETELAH inisialisasi selesai
         if (initialized) {
             localStorage.setItem('theme', theme);
         }
     }, [theme, initialized]);
 
-    // ... (useEffect untuk updateNavHeight tidak berubah)
+    // Update nav height CSS variable
     useEffect(() => {
         const updateNavHeight = () => {
           const el = navRef.current;
@@ -74,6 +69,7 @@ export function Navbar() {
         };
     }, []);
 
+    // Check if user is admin
     useEffect(() => {
         let active = true;
 
@@ -105,11 +101,7 @@ export function Navbar() {
     }, [session?.user?.id]);
 
     const handleThemeToggle = () => {
-        setTheme((t) => {
-            const newTheme = t === 'dark' ? 'light' : 'dark';
-            // localStorage akan diperbarui di useEffect berikutnya
-            return newTheme;
-        });
+        setTheme((t) => t === 'dark' ? 'light' : 'dark');
     }
 
     const handleLogout = async () => {
@@ -121,18 +113,17 @@ export function Navbar() {
     return (
         <nav ref={navRef} className="fixed top-0 left-0 right-0 z-50 p-4 transition-all duration-300">
             
-            {/* Container utama dengan background putih, blur, dan rounded-full */}
             <div className="max-w-4xl mx-auto flex justify-between items-center rounded-full px-6 py-2 shadow-xl ring-1 backdrop-blur-md
             bg-white/80 ring-white/50
             dark:bg-gray-900/70 dark:ring-white/10">
                 
                 {/* Logo */}
-                <Link href="/" className="flex items-center space-x-2 text-gray-900 font-semibold font-flink"> 
+                <Link href="/" className="flex items-center space-x-2 text-gray-900 dark:text-gray-100 font-semibold font-flink"> 
                     <Home className="w-5 h-5 text-orange-500 fill-orange-500/10"/> 
                     <span></span>
                 </Link>
                 
-                {/* Navigasi Link */}
+                {/* Navigation Links */}
                 <div className="hidden md:flex space-x-6 text-sm font-flink font-normal"> 
                     {navItems.map((item) => (
                         <Link 
@@ -153,7 +144,7 @@ export function Navbar() {
                     )}
                 </div>
                 
-                {/* Tombol Login/Aksi */}
+                {/* Login/User Actions */}
                 <div className="flex items-center gap-2">
                     {session?.user ? (
                         <>
@@ -164,7 +155,7 @@ export function Navbar() {
                                 onClick={handleLogout}
                                 variant="ghost"
                                 size="icon"
-                                className="rounded-full"
+                                className="rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
                                 aria-label="Logout"
                                 title="Logout"
                             >
@@ -176,7 +167,7 @@ export function Navbar() {
                             <Button 
                                 className="rounded-full font-flink font-medium 
                                         bg-gray-900 text-white 
-                                        hover:bg-gray-700 dark:bg-gray-900 dark:hover:bg-gray-700"
+                                        hover:bg-gray-700 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-300"
                             >
                                 Login
                             </Button>
@@ -186,15 +177,13 @@ export function Navbar() {
                         variant="ghost"
                         size="icon"
                         aria-label="Toggle theme"
-                        onClick={handleThemeToggle} // Menggunakan handler baru
-                        className="rounded-full"
+                        onClick={handleThemeToggle}
+                        className="rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
                     >
-                        {/* 4. TUNDA RENDERING IKON YANG BERKONFLIK */}
                         {initialized ? (
                             theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />
                         ) : (
-                            // Render ikon default yang sama dengan yang dilihat server (Moon)
-                            <Moon className="h-5 w-5 text-gray-900 dark:text-gray-100" />
+                            <Moon className="h-5 w-5" />
                         )}
                     </Button>
                 </div>

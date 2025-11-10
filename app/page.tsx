@@ -7,20 +7,18 @@ import { ArrowDown, Zap, AlertTriangle, MapPin, BookOpen, ChevronDown } from 'lu
 // Komponen Button sederhana dengan types
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode
-  variant?: 'default' | 'outline' | 'link'
+  variant?: 'default' | 'outline' | 'link' | 'ghost'  // Add 'ghost' here
   size?: 'default' | 'lg' | 'sm'
 }
 
 const Button = ({ children, className = '', variant = 'default', size = 'default', ...props }: ButtonProps) => {
-  // --- CHANGE IS HERE ---
-  // REMOVE 'rounded-md' from baseStyles so that it can be applied via the className prop
   const baseStyles = 'inline-flex items-center justify-center font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50'
-  // ----------------------
 
   const variants = {
     default: 'bg-blue-600 text-white hover:bg-blue-700',
     outline: 'border-2 border-gray-300 bg-transparent hover:bg-gray-100',
-    link: 'text-blue-600 underline-offset-4 hover:underline'
+    link: 'text-blue-600 underline-offset-4 hover:underline',
+    ghost: ''  // Add ghost variant with empty string so className can override
   }
 
   const sizes = {
@@ -31,7 +29,6 @@ const Button = ({ children, className = '', variant = 'default', size = 'default
 
   return (
     <button 
-      // The 'className' prop passed from the parent will now successfully apply 'rounded-full'
       className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
       {...props}
     >
