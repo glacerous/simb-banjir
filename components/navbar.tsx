@@ -8,11 +8,11 @@ import { authClient } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
 
 const navItems = [
-    { name: 'Home', href: '/' },
-    { name: 'Peta', href: '/map' },
-    { name: 'Persiapan', href: '/education' },
-    { name: 'Artikel', href: '/artikel' },
-    { name: 'Panduan', href: '/panduan' }
+    { name: 'Home', href: '/' as const },
+    { name: 'Peta', href: '/map' as const },
+    { name: 'Persiapan', href: '/education' as const },
+    { name: 'Artikel', href: '/artikel' as const },
+    { name: 'Panduan', href: '/panduan' as const }
 ];
 
 export function Navbar() {
@@ -118,7 +118,7 @@ export function Navbar() {
             dark:bg-gray-900/70 dark:ring-white/10">
                 
                 {/* Logo */}
-                <Link href="/" className="flex items-center space-x-2 text-gray-900 dark:text-gray-100 font-semibold font-flink"> 
+                <Link href={"/" as any} className="flex items-center space-x-2 text-gray-900 dark:text-gray-100 font-semibold font-flink"> 
                     <Home className="w-5 h-5 text-orange-500 fill-orange-500/10"/> 
                     <span></span>
                 </Link>
@@ -128,7 +128,7 @@ export function Navbar() {
                     {navItems.map((item) => (
                         <Link 
                             key={item.name} 
-                            href={item.href} 
+                            href={item.href as any}
                             className="text-gray-900 hover:text-orange-500 transition-colors dark:text-gray-100"
                         >
                             {item.name}
@@ -136,7 +136,7 @@ export function Navbar() {
                     ))}
                     {isAdmin && (
                         <Link 
-                            href="/admin" 
+                            href={"/admin" as any}
                             className="text-gray-900 hover:text-orange-500 transition-colors dark:text-gray-100"
                         >
                             Admin
@@ -163,15 +163,14 @@ export function Navbar() {
                             </Button>
                         </>
                     ) : (
-                        <Link href="/login">
-                            <Button 
-                                className="rounded-full font-flink font-medium 
-                                        bg-gray-900 text-white 
-                                        hover:bg-gray-700 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-300"
-                            >
-                                Login
-                            </Button>
-                        </Link>
+                        <Button 
+                            onClick={() => router.push('/login')}
+                            className="rounded-full font-flink font-medium 
+                                    bg-gray-900 text-white 
+                                    hover:bg-gray-700 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-300"
+                        >
+                            Login
+                        </Button>
                     )}
                     <Button
                         variant="ghost"

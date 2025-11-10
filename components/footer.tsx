@@ -34,12 +34,7 @@ export function Footer() {
               Tentang Kami
             </Link>
             {/* Tambahkan link ke halaman status yang baru dibuat */}
-            <Link 
-              href="/status" 
-              className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-            >
-              Status Bencana
-            </Link>
+            
           </div>
         </div>
 
