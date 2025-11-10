@@ -46,10 +46,16 @@ export function PreparednessChecklist({ userId }: PreparednessChecklistProps) {
         const response = await fetch(`/api/checklist?userId=${session.user.id}`)
         if (response.ok) {
           const data = await response.json()
-          const completedItems = new Set(
-            data.filter((item: any) => item.isCompleted).map((item: any) => item.itemKey)
-          )
-          setCheckedItems(completedItems)
+          // --- FIX APPLIED HERE ---
+                    const completedKeys: string[] = data
+                      .filter((item: any) => item.isCompleted)
+                      .map((item: any) => String(item.itemKey)); // 1. Map itemKey to guaranteed String
+          
+                    // 2. Explicitly type the Set creation
+                    const completedItems: Set<string> = new Set(completedKeys);
+                    
+                    setCheckedItems(completedItems); // Now TypeScript accepts Set<string>
+                    // --------------------------
         }
       } catch (error) {
         console.error('Error loading checklist:', error)
