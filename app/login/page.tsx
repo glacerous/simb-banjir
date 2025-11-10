@@ -13,24 +13,37 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [debugInfo, setDebugInfo] = useState<string>('')
   const router = useRouter()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setDebugInfo('')
     setLoading(true)
 
     try {
+      console.log('Attempting login with:', { email, baseURL: window.location.origin })
+      
       const result = await authClient.signIn.email({
         email,
         password,
       })
 
+      console.log('Login result:', result)
+
       if (result.error) {
         setError(result.error.message || 'Gagal masuk. Periksa email dan password Anda.')
+        setDebugInfo(`Error code: ${result.error.status || 'unknown'}`)
       } else {
         try {
-          const profileRes = await fetch('/api/users/me', { cache: 'no-store' })
+          const profileRes = await fetch('/api/users/me', { 
+            cache: 'no-store',
+            credentials: 'include' // Important for cookies
+          })
+          
+          console.log('Profile fetch status:', profileRes.status)
+          
           if (profileRes.ok) {
             const profile = await profileRes.json()
             if (profile?.user?.role === 'ADMIN') {
@@ -41,13 +54,24 @@ export default function LoginPage() {
           }
         } catch (profileError) {
           console.error('Failed to fetch profile', profileError)
+          setDebugInfo('Profile fetch failed but login succeeded')
         }
 
         router.push('/')
         router.refresh()
       }
     } catch (err: any) {
+      console.error('Login error:', err)
       setError(err.message || 'Terjadi kesalahan saat masuk.')
+      
+      // Enhanced error debugging
+      if (err.message?.includes('fetch')) {
+        setDebugInfo('Network error - check API endpoint and CORS settings')
+      } else if (err.message?.includes('CORS')) {
+        setDebugInfo('CORS error - check server configuration')
+      } else {
+        setDebugInfo(`Error type: ${err.name || 'Unknown'}`)
+      }
     } finally {
       setLoading(false)
     }
@@ -67,9 +91,16 @@ export default function LoginPage() {
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             {error && (
-              <div className="p-3 rounded-md bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 flex items-center gap-2 text-red-800 dark:text-red-300 text-sm">
-                <AlertCircle className="h-4 w-4" />
-                <span>{error}</span>
+              <div className="space-y-2">
+                <div className="p-3 rounded-md bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 flex items-center gap-2 text-red-800 dark:text-red-300 text-sm">
+                  <AlertCircle className="h-4 w-4" />
+                  <span>{error}</span>
+                </div>
+                {debugInfo && (
+                  <div className="p-2 rounded-md bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-300 text-xs font-mono">
+                    {debugInfo}
+                  </div>
+                )}
               </div>
             )}
 
@@ -125,4 +156,3 @@ export default function LoginPage() {
     </div>
   )
 }
-
