@@ -1,0 +1,12 @@
+/* styles/ColorBends.css */
+.color-bends-container {
+    /* Harus diatur agar memiliki ukuran, contoh: */
+    width: 100%;
+    height: 100%;
+    /* Atur posisi agar ia menjadi latar belakang */
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0; /* Pastikan berada di bawah konten Anda */
+    pointer-events: none; /* Opsional: Memungkinkan interaksi mouse melewati latar belakang */
+}

@@ -1,0 +1,15 @@
+.next
+node_modules
+.env
+.env.local
+dist
+out
+/.vercel
+/coverage
+
+# Prisma
+prisma/*.db
+prisma/migrations
+
+
+
