@@ -195,8 +195,10 @@ export default function HomePage() {
                dark:bg-gray-900 dark:text-white dark:hover:bg-gray-800"
     style={{ fontFamily: 'var(--font-flink)', fontWeight: 500 }}
 >
+<a href="/map">
     Lihat Peta Sekarang
     <span className="ml-2">→</span>
+  </a>
 </Button>
             <Button 
               variant="link" 
@@ -204,7 +206,9 @@ export default function HomePage() {
               className="text-gray-900 hover:text-gray-700 underline-offset-4 dark:text-gray-100 dark:hover:text-gray-300"
               style={{ fontFamily: 'var(--font-flink)', fontWeight: 400 }}
             >
-              Watch Demo
+              <a href="/education">
+    Persiapan
+  </a>
             </Button>
           </motion.div>
         </div>
